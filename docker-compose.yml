@@ -84,6 +84,21 @@ services:
     stdin_open: true
     tty: true
 
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    container_name: pokemon_ui
+    restart: unless-stopped
+    environment:
+      AGENT_URL: ${AGENT_URL:-http://agent:8001}
+    ports:
+      - "${UI_PORT:-8501}:8501"
+    depends_on:
+      - agent
+    networks:
+      - pokemon_network
+
 volumes:
   postgres_data:
 

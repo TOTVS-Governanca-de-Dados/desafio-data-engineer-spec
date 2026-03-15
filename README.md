@@ -40,11 +40,16 @@ flowchart TB
             AG[OpenAI Agent]
             TOOLS[Tools]
         end
+
+        subgraph UI["Container: ui"]
+            ST[Streamlit]
+        end
     end
 
     subgraph Clients
         CLI[CLI]
         HTTP[HTTP Client]
+        BROWSER[Browser]
     end
 
     POKEAPI -->|HTTP GET| E
@@ -56,10 +61,12 @@ flowchart TB
     R -->|JSON| AGENT
     TOOLS --> R
     AG --> TOOLS
+    ST -->|POST /ask| AG
 
     CLI -->|docker compose run| AG
     HTTP -->|POST /ask| AG
     HTTP -->|GET /pokemons| FA
+    BROWSER -->|http://localhost:8501| ST
 ```
 
 ### Fluxo de Dados
@@ -84,6 +91,7 @@ flowchart TB
 | httpx | 0.27+ | Cliente HTTP moderno com suporte async e retry |
 | structlog | 24.1+ | Logging estruturado em JSON para observabilidade |
 | OpenAI Agents SDK | 0.1+ | SDK oficial para construcao de agentes com function calling |
+| Streamlit | 1.32+ | Framework para criacao rapida de interfaces web interativas |
 | Docker | 24+ | Containerizacao para reproducibilidade e isolamento |
 | GitHub Actions | - | CI/CD integrado ao repositorio com workflow declarativo |
 
@@ -141,6 +149,7 @@ NAME            STATUS
 pokemon_db      healthy
 pokemon_api     running
 pokemon_agent   running
+pokemon_ui      running
 ```
 
 ### 5. Verificar logs (opcional)
@@ -326,6 +335,43 @@ curl -X POST http://localhost:8001/ask \
 
 ---
 
+## Interface Web
+
+O projeto inclui uma interface web construida com Streamlit para interacao visual com o Agente de IA.
+
+### Acesso
+
+Apos subir os containers, acesse:
+
+```
+http://localhost:8501
+```
+
+### Funcionalidades
+
+- **Chat interativo**: Digite perguntas em linguagem natural sobre Pokemon
+- **Historico de conversas**: Visualize todas as perguntas e respostas da sessao
+- **Exemplos de perguntas**: Clique em exemplos pre-definidos na barra lateral
+- **Indicador de status**: Mostra se o agente esta online ou offline
+- **Tema escuro**: Interface com identidade visual TOTVS (azul #1B2A4A e laranja #F26522)
+
+### Exemplos de uso
+
+1. Acesse `http://localhost:8501` no navegador
+2. Digite uma pergunta como "Qual Pokemon tem o maior ataque?"
+3. Clique em "Consultar" e aguarde a resposta do agente
+4. O historico fica salvo durante a sessao
+
+### Perguntas de exemplo disponiveis
+
+- "Qual pokemon tem o maior ataque?"
+- "Liste os pokemons do tipo fogo"
+- "Compare pikachu e charizard"
+- "Quais sao os top 5 pokemons por defesa?"
+- "Me fale sobre o bulbasaur"
+
+---
+
 ## Pipeline CI/CD
 
 O projeto usa GitHub Actions para integracao continua.
@@ -372,6 +418,10 @@ Acesse a aba "Actions" no repositorio GitHub ou verifique o badge no topo deste 
 │   ├── transform.py
 │   ├── load.py
 │   ├── main.py
+│   ├── Dockerfile
+│   └── requirements.txt
+├── ui/                         # Interface Web Streamlit
+│   ├── streamlit_app.py
 │   ├── Dockerfile
 │   └── requirements.txt
 ├── db/
