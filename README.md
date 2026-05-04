@@ -1,4 +1,4 @@
-# Desafio Técnico – Engenharia de Dados & Backend - TOTVS IDEIA (Inteligência de Dados e IA)
+# Desafio Técnico – Engenharia de Dados & IA
 
 ## Contexto
 
